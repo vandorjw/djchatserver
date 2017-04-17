@@ -95,7 +95,7 @@ Vagrant.configure("2") do |config|
     redis.vm.box_url = "debian/jessie64"
 
     redis.vm.network :private_network, ip: "10.0.0.103"
-    redis.vm.network "forwarded_port", guest: 6397, host: 6397
+    redis.vm.network "forwarded_port", guest: 6379, host: 6379
 
     redis.vm.provider "virtualbox" do |vb|
       vb.gui = false
@@ -111,7 +111,15 @@ Vagrant.configure("2") do |config|
       rm -rf /var/lib/apt/lists/*
     SCRIPT
 
+    $CONFIGURE_REDIS = <<-SCRIPT
+      export DEBIAN_FRONTEND=noninteractive
+      sudo cp /home/vagrant/redis.conf /etc/redis/redis.conf
+      rm /home/vagrant/redis.conf
+    SCRIPT
+
     redis.vm.provision "shell", inline: $SERVER_SETUP, privileged: true
+    redis.vm.provision "file", source: "./vagrant.d/redis/redis.conf", destination: "~/redis.conf"
+    redis.vm.provision "shell", inline: $CONFIGURE_REDIS
   end
 
 end
