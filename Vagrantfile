@@ -3,12 +3,13 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "web" do |web|
+  config.vm.define "web", primary: true do |web|
     web.vm.box = "debian/jessie64"
     web.vm.hostname = "web"
     web.vm.box_url = "debian/jessie64"
 
     web.vm.network :private_network, ip: "10.0.0.101"
+    web.vm.network "forwarded_port", guest: 8000, host: 8000
 
     config.vm.synced_folder ".", "/home/vagrant/project"
 
@@ -62,6 +63,7 @@ Vagrant.configure("2") do |config|
     db.vm.box_url = "debian/jessie64"
 
     db.vm.network :private_network, ip: "10.0.0.102"
+    db.vm.network "forwarded_port", guest: 5432, host: 5432
 
     db.vm.provider "virtualbox" do |vb|
       vb.gui = false
@@ -85,6 +87,31 @@ Vagrant.configure("2") do |config|
 
     db.vm.provision "shell", inline: $SERVER_SETUP, privileged: true
     db.vm.provision "shell", inline: $DATABASE_SETUP, privileged: false
+  end
+
+  config.vm.define "redis" do |redis|
+    redis.vm.box = "debian/jessie64"
+    redis.vm.hostname = "redis"
+    redis.vm.box_url = "debian/jessie64"
+
+    redis.vm.network :private_network, ip: "10.0.0.103"
+    redis.vm.network "forwarded_port", guest: 6397, host: 6397
+
+    redis.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "512"
+    end
+
+    $SERVER_SETUP = <<-SCRIPT
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update && apt-get install -y --no-install-recommends \
+      redis-server
+      apt-get autoremove
+      apt-get clean
+      rm -rf /var/lib/apt/lists/*
+    SCRIPT
+
+    redis.vm.provision "shell", inline: $SERVER_SETUP, privileged: true
   end
 
 end
