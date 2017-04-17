@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+
+        // Note that the path doesn't matter right now; any WebSocket
+        // connection gets bumped over to WebSocket consumers
+        socket = new WebSocket("ws://127.0.0.1:8000/chat/");
+        socket.onmessage = function (e) {
+            var chat_history = document.getElementById("chat_history");
+            var node = document.createElement("li");
+            var received_message = document.createTextNode(e.data);
+            node.appendChild(received_message);
+            chat_history.appendChild(node);
+        };
+        socket.onopen = function () {
+            socket.send("hello world");
+        };
+        // Call onopen directly if socket is already open
+        if (socket.readyState == WebSocket.OPEN) socket.onopen();
+    </script>
+</head>
+<body>
+<div id="page_title">
+    <h1>Simple WebChat</h1>
+</div>
+<div id="content">
+    <ul id="chat_history">
+    </ul>
+</div>
+
+</body>
+</html>
