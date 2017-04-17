@@ -46,6 +46,8 @@ Vagrant.configure("2") do |config|
       export PYTHONUNBUFFERED=1
       python3 -m venv venv
       source venv/bin/activate
+      pip install pip --upgrade
+      pip install setuptools --upgrade
       pip install -r /home/vagrant/project/requirements.txt
     SCRIPT
 
