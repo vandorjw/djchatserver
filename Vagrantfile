@@ -8,8 +8,8 @@ Vagrant.configure("2") do |config|
     web.vm.hostname = "web"
     web.vm.box_url = "debian/jessie64"
 
-    web.vm.network :private_network, ip: "10.0.0.101"
-    web.vm.network "forwarded_port", guest: 8000, host: 8000
+    web.vm.network :private_network, type: "dhcp"
+    web.vm.network :forwarded_port, guest: 8000, host: 8000
 
     config.vm.synced_folder ".", "/home/vagrant/project"
 
@@ -52,8 +52,15 @@ Vagrant.configure("2") do |config|
       pip install -r /home/vagrant/project/requirements.txt
     SCRIPT
 
+    $DJANGO_AUTOSTART = <<-SCRIPT
+      export DEBIAN_FRONTEND=noninteractive
+      sudo cp /home/vagrant/django.service /etc/systemd/system/django.service
+      rm /home/vagrant/django.service
+    SCRIPT
+
     web.vm.provision "shell", inline: $SERVER_SETUP, privileged: true
     web.vm.provision "shell", inline: $VIRTUALENV_SETUP, privileged: false
+    web.vm.provision "file", source: "./vagrant.d/web/django.service", destination: "~/django.service"
 
   end
 
@@ -62,8 +69,8 @@ Vagrant.configure("2") do |config|
     db.vm.hostname = "db"
     db.vm.box_url = "debian/jessie64"
 
-    db.vm.network :private_network, ip: "10.0.0.102"
-    db.vm.network "forwarded_port", guest: 5432, host: 5432
+    db.vm.network :private_network, type: "dhcp"
+    db.vm.network :forwarded_port, guest: 5432, host: 5432
 
     db.vm.provider "virtualbox" do |vb|
       vb.gui = false
@@ -94,8 +101,8 @@ Vagrant.configure("2") do |config|
     redis.vm.hostname = "redis"
     redis.vm.box_url = "debian/jessie64"
 
-    redis.vm.network :private_network, ip: "10.0.0.103"
-    redis.vm.network "forwarded_port", guest: 6379, host: 6379
+    redis.vm.network :private_network, type: "dhcp"
+    redis.vm.network :forwarded_port, guest: 6379, host: 6379
 
     redis.vm.provider "virtualbox" do |vb|
       vb.gui = false

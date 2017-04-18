@@ -1,0 +1,15 @@
+[Unit]
+Description=django
+After=syslog.target network.target
+
+[Service]
+WorkingDirectory=/home/vagrant/project
+EnvironmentFile=/home/vagrant/project/.env
+PIDFile=/run/project/django.pid
+Type=forking
+KillMode=process
+Restart=restart-always
+ExecStart=/home/vagrant/venv/bin/django-admin runserver 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
