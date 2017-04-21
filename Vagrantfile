@@ -1,12 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
 Vagrant.configure("2") do |config|
 
   config.vm.define "web", primary: true do |web|
-    web.vm.box = "debian/jessie64"
+    web.vm.box = "debian/contrib-jessie64"
     web.vm.hostname = "web"
-    web.vm.box_url = "debian/jessie64"
+    web.vm.box_url = "debian/contrib-jessie64"
 
     web.vm.network :private_network, type: "dhcp"
     web.vm.network :forwarded_port, guest: 8000, host: 8000
@@ -65,9 +66,9 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "db" do |db|
-    db.vm.box = "debian/jessie64"
+    db.vm.box = "debian/contrib-jessie64"
     db.vm.hostname = "db"
-    db.vm.box_url = "debian/jessie64"
+    db.vm.box_url = "debian/contrib-jessie64"
 
     db.vm.network :private_network, type: "dhcp"
     db.vm.network :forwarded_port, guest: 5432, host: 5432
@@ -97,9 +98,9 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "redis" do |redis|
-    redis.vm.box = "debian/jessie64"
+    redis.vm.box = "debian/contrib-jessie64"
     redis.vm.hostname = "redis"
-    redis.vm.box_url = "debian/jessie64"
+    redis.vm.box_url = "debian/contrib-jessie64"
 
     redis.vm.network :private_network, type: "dhcp"
     redis.vm.network :forwarded_port, guest: 6379, host: 6379
